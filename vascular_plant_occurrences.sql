@@ -15,7 +15,9 @@ surveys.title AS survey_title,
 
 o.website_id,
 o.input_form, -- needed if want to link back to the record
-
+      
+--(snf.website_title || ' | ' || snf.survey_title || coalesce(' | ' || snf.group_title, '')) AS Source,
+      
 -- snf.public_entered_sref,
 snf.entered_sref_system,
 snf.attr_sref_precision,
@@ -299,6 +301,8 @@ AND o.website_id IN (
    32, -- NPMS
    29 -- CEDaR
    -- 112 -- iNaturalist
+   -- 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 23, 24, 25, 27, 28, 29, 30,32, 33, 34, 40, 41, 42, 43, 44, 47, 49, 51, 54, 59, 65, 68, 69, 71, 72, 73, 75, -- all websites shring for verification 08.05.24
+   -- 83, 87, 92, 97, 98, 101, 108, 109, 112, 115, 119, 120, 123, 124, 127, 128, 129, 131, 132, 133, 135, 139, 141, 142, 143, 145, 147, 148, 150, 151, 152, 155 
 )
 
 AND o.survey_id != 105 -- 'Rinse' (appears to be a Belgian project)
@@ -323,6 +327,9 @@ AND cttl.taxon_group_id in (
 GROUP BY
 o.id,
 o.sample_id,
+-- snf.website_title,
+-- snf.survey_title,
+-- snf.group_title,
 snf.public_entered_sref,
 snf.entered_sref_system,
 entered_sref_full,
