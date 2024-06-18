@@ -1,11 +1,6 @@
 
 -- Query used for reporting BSBI-related indicia occurrences
 
--- For convenience a temporary view is used (this can be still created by accounts with only read permission) which (as it's temporary) is dropped automatically once the session closes.
-
--- Run this from the command-line psql utility, as I had problems when trying to use the pgAdmin front end, though things may have improved since then
-
-CREATE TEMP VIEW v1 AS
 SELECT 
 o.id AS occurrence_id,
 o.sample_id,
@@ -133,7 +128,11 @@ jsonb_build_object(
                'date_end', sample_attribute_values.date_end_value,
                'date_type', sample_attribute_values.date_type_value
              )
-   END
+   END,
+   'upper_value', -- upper value is used if allow_ranges is set
+   sample_attribute_values.upper_value,
+   'allow_ranges',
+   sample_attributes.allow_ranges
 )
 ) AS "sample_atts_summary"
 FROM indicia.sample_attribute_values
@@ -176,7 +175,11 @@ jsonb_build_object(
                'date_end', sample_attribute_values.date_end_value,
                'date_type', sample_attribute_values.date_type_value
              )
-   END
+   END,
+   'upper_value', -- upper value is used if allow_ranges is set
+   sample_attribute_values.upper_value,
+   'allow_ranges',
+   sample_attributes.allow_ranges
 )
 ) AS "sample_atts_summary"
 FROM indicia.sample_attribute_values
@@ -219,7 +222,11 @@ jsonb_build_object(
                'date_end', occurrence_attribute_values.date_end_value,
                'date_type', occurrence_attribute_values.date_type_value
              )
-   END
+   END,
+   'upper_value', -- upper value is used if allow_ranges is set
+   occurrence_attribute_values.upper_value,
+   'allow_ranges',
+   occurrence_attributes.allow_ranges
 )
 ) AS "occurrence_atts_summary"
 FROM indicia.occurrence_attribute_values
@@ -296,14 +303,8 @@ WHERE
 o.training = false 
 -- AND o.updated_on >= timestamp '2019-03-01'
 
-AND o.website_id IN (
-   23, -- iRecord
-   32, -- NPMS
-   29 -- CEDaR
-   -- 112 -- iNaturalist
-   -- 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 23, 24, 25, 27, 28, 29, 30,32, 33, 34, 40, 41, 42, 43, 44, 47, 49, 51, 54, 59, 65, 68, 69, 71, 72, 73, 75, -- all websites sharing for verification 08.05.24
-   -- 83, 87, 92, 97, 98, 101, 108, 109, 112, 115, 119, 120, 123, 124, 127, 128, 129, 131, 132, 133, 135, 139, 141, 142, 143, 145, 147, 148, 150, 151, 152, 155 
-)
+AND o.website_id IN (3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 23, 24, 25, 27, 28, 29, 30, 32, 33, 34, 40, 41, 42, 43, 44, 47, 49, 51, 54, 59, 65, 68, 69, 71, 72, 73, 75, 83, 87, 92, 97, 98, 101, 108, 109, 112, 115, 119, 120, 123, 124, 127, 128, 129, 131, 132, 133, 135, 139, 141, 142, 143, 145, 147, 148, 150, 151, 152, 155, 160)
+     ) -- iRecord (23), iNaturalist (112) and NPMS (32) to be exported seperately
 
 AND o.survey_id != 105 -- 'Rinse' (appears to be a Belgian project)
 
@@ -366,10 +367,5 @@ licence.code,
 o.tracking
 
 ORDER BY o.id
--- LIMIT 500
 ;
 
-
-\copy (SELECT * FROM v1) to 'C:\Users\samamy\Downloads\dev_warehouse_export_2024_05_07.csv' with ( FORMAT csv, ENCODING 'UTF-8', FORCE_QUOTE *, HEADER );
-
-drop view v1;
