@@ -1,0 +1,60 @@
+--vascular plant verification by year (note add or remove website = 32 for NPMS)
+
+SELECT extract(year from o.verified_on) as year_verified, count(o.id) as total, 
+	count(case when o.record_status='V' then o.id else null end) as verified, 
+	count(case when o.record_status='R' then o.id else null end) as rejected, 
+	count(case when o.record_status='C' then o.id else null end) as awaiting_review
+FROM cache_occurrences_functional o
+JOIN cache_occurrences_nonfunctional cnf ON o.id = cnf.id
+JOIN websites w on w.id = o.website_id 
+JOIN locations l ON o.location_ids && array[l.id]
+AND l.location_type_id=15 -- vice-county
+WHERE o.training = FALSE 
+AND o.website_id in (3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 23, 24, 25, 27, 28, 29, 30,32, 33, 34, 40, 41, 42, 43, 44, 47, 49, 51, 54, 59, 65, 68, 69, 71, 72, 73, 75, 83, 87, 92, 97, 98, 101, 108, 109, 112, 115, 119, 120, 123, 124, 127, 128, 129, 131, 132, 133, 135, 139, 141, 142, 143, 145, 147, 148, 150, 151, 152) 
+AND o.taxon_group_id in (78,81,87,89,94,99,137,148)
+GROUP BY extract(year from o.verified_on);
+
+--vascular plant verification by verifier and VC and year
+SELECT cnf.verifier, l.name as VC_name, extract(year from o.verified_on) as year_verified, count(o.id) as total, 
+	count(case when o.record_status='V' then o.id else null end) as verified, 
+	count(case when o.record_status='R' then o.id else null end) as rejected, 
+	count(case when o.record_status='C' then o.id else null end) as awaiting_review
+FROM cache_occurrences_functional o
+JOIN cache_occurrences_nonfunctional cnf ON o.id = cnf.id
+JOIN websites w on w.id = o.website_id 
+JOIN locations l ON o.location_ids && array[l.id]
+AND l.location_type_id=15 -- vice-county
+WHERE o.training = FALSE 
+AND o.website_id in (3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 23, 24, 25, 27, 28, 29, 30, 32, 33, 34, 40, 41, 42, 43, 44, 47, 49, 51, 54, 59, 65, 68, 69, 71, 72, 73, 75, 83, 87, 92, 97, 98, 101, 108, 109, 112, 115, 119, 120, 123, 124, 127, 128, 129, 131, 132, 133, 135, 139, 141, 142, 143, 145, 147, 148, 150, 151, 152) 
+AND o.taxon_group_id in (78,81,87,89,94,99,137,148)
+and cnf.verifier not like ('admin,core')
+GROUP BY cnf.verifier, l.name, extract(year from o.verified_on);
+
+--NPMS ONLY vascular plant verification by verifier and VC and year
+SELECT cnf.verifier, l.name as VC_name, max(extract(year from o.verified_on)) as max_year_verified, count(o.id) as total,
+count(case when extract(year from o.verified_on) = '2010' then o.id else null end) as verified_2010,
+count(case when extract(year from o.verified_on) = '2011' then o.id else null end) as verified_2011,
+count(case when extract(year from o.verified_on) = '2012' then o.id else null end) as verified_2012,
+count(case when extract(year from o.verified_on) = '2013' then o.id else null end) as verified_2013,
+count(case when extract(year from o.verified_on) = '2014' then o.id else null end) as verified_2014,
+count(case when extract(year from o.verified_on) = '2015' then o.id else null end) as verified_2015,
+count(case when extract(year from o.verified_on) = '2016' then o.id else null end) as verified_2016,
+count(case when extract(year from o.verified_on) = '2017' then o.id else null end) as verified_2017,
+count(case when extract(year from o.verified_on) = '2018' then o.id else null end) as verified_2018,
+count(case when extract(year from o.verified_on) = '2019' then o.id else null end) as verified_2019,
+count(case when extract(year from o.verified_on) = '2020' then o.id else null end) as verified_2020,
+count(case when extract(year from o.verified_on) = '2021' then o.id else null end) as verified_2021,
+count(case when extract(year from o.verified_on) = '2022' then o.id else null end) as verified_2022,
+count(case when extract(year from o.verified_on) = '2023' then o.id else null end) as verified_2023,
+	count(case when o.record_status='V' then o.id else null end) as Total_verified, 
+	count(case when o.record_status='R' then o.id else null end) as Total_rejected, 
+	count(case when o.record_status='C' then o.id else null end) as awaiting_review
+FROM cache_occurrences_functional o
+JOIN cache_occurrences_nonfunctional cnf ON o.id = cnf.id
+JOIN websites w on w.id = o.website_id 
+JOIN locations l ON o.location_ids && array[l.id]
+AND l.location_type_id=15 -- vice-county
+WHERE o.training = FALSE 
+AND o.website_id in (32) 
+AND o.taxon_group_id in (78,81,87,89,94,99,137,148)
+GROUP BY cnf.verifier, l.name;
