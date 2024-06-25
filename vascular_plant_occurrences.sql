@@ -304,7 +304,7 @@ o.training = false
 -- AND o.updated_on >= timestamp '2019-03-01'
 
 AND o.website_id IN (3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 23, 24, 25, 27, 28, 29, 30, 32, 33, 34, 40, 41, 42, 43, 44, 47, 49, 51, 54, 59, 65, 68, 69, 71, 72, 73, 75, 83, 87, 92, 97, 98, 101, 108, 109, 112, 115, 119, 120, 123, 124, 127, 128, 129, 131, 132, 133, 135, 139, 141, 142, 143, 145, 147, 148, 150, 151, 152, 155, 160)
-     ) -- iRecord (23), iNaturalist (112) and NPMS (32) to be exported seperately
+      -- iRecord (23), iNaturalist (112) and NPMS (32) to be exported seperately
 
 AND o.survey_id != 105 -- 'Rinse' (appears to be a Belgian project)
 
